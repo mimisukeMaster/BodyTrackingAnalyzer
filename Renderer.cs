@@ -11,12 +11,12 @@ namespace Csharp_3d_viewer
 {
     public class Renderer
     {
-        // private SphereRenderer SphereRenderer;
-        // private CylinderRenderer CylinderRenderer;
-        // private PointCloudRenderer PointCloudRenderer;
+        private SphereRenderer SphereRenderer;
+        private CylinderRenderer CylinderRenderer;
+        private PointCloudRenderer PointCloudRenderer;
 
         private readonly VisualizerData visualizerData;
-        // private List<Vertex> pointCloud = null;
+        private List<Vertex> pointCloud = null;
         public Renderer(VisualizerData visualizerData)
         {
             this.visualizerData = visualizerData;
@@ -37,7 +37,7 @@ namespace Csharp_3d_viewer
                 using (NativeWindow nativeWindow = NativeWindow.Create())
                 {
                     IsActive = true;
-                    // nativeWindow.ContextCreated += NativeWindow_ContextCreated;
+                    nativeWindow.ContextCreated += NativeWindow_ContextCreated;
                     nativeWindow.Render += NativeWindow_Render;
                     nativeWindow.KeyDown += (object obj, NativeWindowKeyEventArgs e) =>
                     {
@@ -92,39 +92,39 @@ namespace Csharp_3d_viewer
                 }
                 NativeWindow nativeWindow = (NativeWindow)sender;
 
-                // Gl.Viewport(0, 0, (int)nativeWindow.Width, (int)nativeWindow.Height);
-                // Gl.Clear(ClearBufferMask.ColorBufferBit);
+                Gl.Viewport(0, 0, (int)nativeWindow.Width, (int)nativeWindow.Height);
+                Gl.Clear(ClearBufferMask.ColorBufferBit);
 
-                // Update model/view/projective matrices in shader
-                // var proj = Matrix4x4.CreatePerspectiveFieldOfView(ToRadians(65.0f), (float)nativeWindow.Width / nativeWindow.Height, 0.1f, 150.0f);
-                // var view = Matrix4x4.CreateLookAt(Vector3.Zero, Vector3.UnitZ, -Vector3.UnitY);
+                // Update model/ view / projective matrices in shader
+                var proj = Matrix4x4.CreatePerspectiveFieldOfView(ToRadians(65.0f), (float)nativeWindow.Width / nativeWindow.Height, 0.1f, 150.0f);
+                var view = Matrix4x4.CreateLookAt(Vector3.Zero, Vector3.UnitZ, -Vector3.UnitY);
 
                 if (lastFrame.NumberOfBodies > 0)
                 {
-                    // SphereRenderer.View = view;
-                    // SphereRenderer.Projection = proj;
+                    SphereRenderer.View = view;
+                    SphereRenderer.Projection = proj;
 
-                    // CylinderRenderer.View = view;
-                    // CylinderRenderer.Projection = proj;
+                    CylinderRenderer.View = view;
+                    CylinderRenderer.Projection = proj;
 
-                    // PointCloudRenderer.View = view;
-                    // PointCloudRenderer.Projection = proj;
+                    PointCloudRenderer.View = view;
+                    PointCloudRenderer.Projection = proj;
 
-                    // PointCloud.ComputePointCloud(lastFrame.Capture.Depth, ref pointCloud);
-                    // PointCloudRenderer.Render(pointCloud, new Vector4(1, 1, 1, 1));
+                    PointCloud.ComputePointCloud(lastFrame.Capture.Depth, ref pointCloud);
+                    PointCloudRenderer.Render(pointCloud, new Vector4(1, 1, 1, 1));
                     if (!IsHuman)
                     {
                         this.day = DateTime.Now.ToString("yyyyMMdd");
                         this.scene = DateTime.Now.ToString("HHmmssfff");
-                        string path = $@"C:\Users\gekka\temp\{this.day}\{this.scene}\depth";
+                        string path = $@"..\..\..\..\..\temp\{this.day}\{this.scene}\depth";
                         Directory.CreateDirectory(path);
                         IsHuman = true;
                     }
                     for (uint i = 0; i < lastFrame.NumberOfBodies; ++i)
                     {
                         // System.Diagnostics.Debug.WriteLine(i);
-                        DirectoryUtils.SafeCreateDirectory($@"C:\Users\gekka\temp\{this.day}\{this.scene}\{i}");
-                        string filename = $@"C:\Users\gekka\temp\{this.day}\{this.scene}\{i}\pos.csv";
+                        DirectoryUtils.SafeCreateDirectory($@"..\..\..\..\..\temp\{this.day}\{this.scene}\{i}");
+                        string filename = $@"..\..\..\..\..\temp\{this.day}\{this.scene}\{i}\pos.csv";
                         var append = true;
                         var skeleton = lastFrame.GetBodySkeleton(i);
                         var bodyId = lastFrame.GetBodyId(i);
@@ -141,14 +141,14 @@ namespace Csharp_3d_viewer
 
                                 // GUI描画
                                 // Render the joint as a sphere.
-                                // const float radius = 0.024f;
-                                // SphereRenderer.Render(joint.Position / 1000, radius, bodyColor);
+                                 const float radius = 0.024f;
+                                SphereRenderer.Render(joint.Position / 1000, radius, bodyColor);
 
-                                // if (JointConnections.JointParent.TryGetValue((JointId)jointId, out JointId parentId))
-                                // {
-                                //     //Render a bone connecting this joint and its parent as a cylinder.
-                                //     CylinderRenderer.Render(joint.Position / 1000, skeleton.GetJoint((int)parentId).Position / 1000, bodyColor);
-                                // }
+                                if (JointConnections.JointParent.TryGetValue((JointId)jointId, out JointId parentId))
+                                {
+                                    //Render a bone connecting this joint and its parent as a cylinder.
+                                    CylinderRenderer.Render(joint.Position / 1000, skeleton.GetJoint((int)parentId).Position / 1000, bodyColor);
+                                }
                             }
                             sw.Write("\r\n"); 
                         }
@@ -165,9 +165,9 @@ namespace Csharp_3d_viewer
 
         private void CreateResources()
         {
-            // SphereRenderer = new SphereRenderer();
-            // CylinderRenderer = new CylinderRenderer();
-            // PointCloudRenderer = new PointCloudRenderer();
+            SphereRenderer = new SphereRenderer();
+            CylinderRenderer = new CylinderRenderer();
+            PointCloudRenderer = new PointCloudRenderer();
         }
         public static class DirectoryUtils
         {

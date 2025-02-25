@@ -7,6 +7,7 @@ using Image = Microsoft.Azure.Kinect.Sensor.Image;
 using BitmapData = System.Drawing.Imaging.BitmapData;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Csharp_3d_viewer
 {
@@ -55,9 +56,9 @@ namespace Csharp_3d_viewer
                                         // Bitmap depthBitmap = new Bitmap(depth_width, depth_height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                                         Bitmap colorBitmap = new Bitmap(depth_width, depth_height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                                        // Image depthImage = sensorCapture.Depth;
+                                        Image depthImage = sensorCapture.Depth;
                                         Image colorImage = transformation.ColorImageToDepthCamera(sensorCapture);
-                                        // ushort[] depthArray = depthImage.GetPixels<ushort>().ToArray();
+                                        ushort[] depthArray = depthImage.GetPixels<ushort>().ToArray();
                                         BGRA[] colorArray = colorImage.GetPixels<BGRA>().ToArray();
                                         // BitmapData bitmapData = depthBitmap.LockBits(new Rectangle(0, 0, depthBitmap.Width, depthBitmap.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
                                         BitmapData bitmapData = colorBitmap.LockBits(new Rectangle(0, 0, colorBitmap.Width, colorBitmap.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
@@ -76,6 +77,7 @@ namespace Csharp_3d_viewer
                                         colorBitmap.UnlockBits(bitmapData);
                                         string string_now = renderer.now.ToString("HHmmssfff");
                                         colorBitmap.Save($@"{PosSaver.path}\{renderer.day}\{renderer.scene}\depth\{string_now}.png", System.Drawing.Imaging.ImageFormat.Png);
+                                        colorBitmap.Dispose();
                                     }
                                 }
                             }
