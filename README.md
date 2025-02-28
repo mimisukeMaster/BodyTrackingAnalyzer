@@ -4,6 +4,12 @@ Azure Kinect DK を使用した人体録画ツール
 
 人体を検知している間、録画を行います。検知されていなければ録画は行われません。<br>また、関節の位置をcsv形式で保存し、録画セッションごとに分けてPNG画像を保存します。
 
+csvファイルについては、一行に１フレーム分のデータが以下のような形で格納されています。
+```csv
+{時刻(時分秒ミリ秒)}, {0点目のx座標}, {0点目のy座標}, {0点目のz座標}, {1点目のx座標}, {1点目y座標}, {1点目z座標}, ...( * 32 点分)...
+```
+なお、`0`～`31`までの関節のインデックス番号については[こちらの公式ページ](https://learn.microsoft.com/ja-jp/previous-versions/azure/kinect-dk/body-joints)から対応関係が確認できます。
+
 
 Recorder for Azure Kinect
 
@@ -32,7 +38,7 @@ Also, saving joint positions in a csv format and color PNG images every human.
 
 4. `ESC`キー、または`Ctrl + C`で終了します。
 
-***
+      ===================================
 1. Build `Csharp_3d_viewer.sln`.
 
 2. Click `Debug > Start without debugging` to begin.
