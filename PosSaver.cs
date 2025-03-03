@@ -151,12 +151,14 @@ namespace Csharp_3d_viewer
                     {
                         DateTime tmp = DateTime.Now;
                         TimeSpan baseInterval = new TimeSpan(0, 0, 10);
-                        Console.WriteLine(TimeSpan.Compare(baseInterval, tmp - now));
-                        if (TimeSpan.Compare(baseInterval, tmp - now) == -1) //別シーンの動作と認識した場合のみ違うディレクトリを生成する
+
+                        if (TimeSpan.Compare(baseInterval, tmp - now) == -1)
                         {
+                            // ディレクトリパスに必要な情報を取得
                             now = DateTime.Now;
                             day = now.ToString("yyyyMMdd");
                             scene = now.ToString("HHmmssfff");
+
                             string depth_path = $@"{path}\{day}\{scene}\depth";
                             Directory.CreateDirectory(depth_path);
                         }

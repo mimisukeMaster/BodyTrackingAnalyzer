@@ -48,37 +48,38 @@ namespace Csharp_3d_viewer
                                 tracker.EnqueueCapture(sensorCapture);
                                 if (renderer.IsHuman)
                                 {
-                                    unsafe
-                                    {
-                                        //Depth画像の横幅(width)と縦幅(height)を取得
-                                        int depth_width = device.GetCalibration().DepthCameraCalibration.ResolutionWidth;
-                                        int depth_height = device.GetCalibration().DepthCameraCalibration.ResolutionHeight;
-                                        // Bitmap depthBitmap = new Bitmap(depth_width, depth_height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                                        Bitmap colorBitmap = new Bitmap(depth_width, depth_height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                                        Image depthImage = sensorCapture.Depth;
-                                        Image colorImage = transformation.ColorImageToDepthCamera(sensorCapture);
-                                        ushort[] depthArray = depthImage.GetPixels<ushort>().ToArray();
-                                        BGRA[] colorArray = colorImage.GetPixels<BGRA>().ToArray();
-                                        // BitmapData bitmapData = depthBitmap.LockBits(new Rectangle(0, 0, depthBitmap.Width, depthBitmap.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-                                        BitmapData bitmapData = colorBitmap.LockBits(new Rectangle(0, 0, colorBitmap.Width, colorBitmap.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-                                        //各ピクセルの値へのポインタ
-                                        byte* pixels = (byte*)bitmapData.Scan0;
-                                        int index = 0;
-                                        //一ピクセルずつ処理
-                                        for (int i = 0; i < colorArray.Length; i++)
-                                        {
-                                            pixels[index++] = colorArray[i].B;
-                                            pixels[index++] = colorArray[i].G;
-                                            pixels[index++] = colorArray[i].R;
-                                            pixels[index++] = 255;//Alpha値を固定して不透過に
-                                        }
-                                        //書き込み終了
-                                        colorBitmap.UnlockBits(bitmapData);
-                                        string string_now = renderer.now.ToString("HHmmssfff");
-                                        colorBitmap.Save($@"{PosSaver.path}\{renderer.day}\{renderer.scene}\depth\{string_now}.png", System.Drawing.Imaging.ImageFormat.Png);
-                                        colorBitmap.Dispose();
-                                    }
+                                    // Depth画像を保存したいとき
+                                    // unsafe
+                                    // {
+                                    //     //Depth画像の横幅(width)と縦幅(height)を取得
+                                    //     int depth_width = device.GetCalibration().DepthCameraCalibration.ResolutionWidth;
+                                    //     int depth_height = device.GetCalibration().DepthCameraCalibration.ResolutionHeight;
+                                    //     // Bitmap depthBitmap = new Bitmap(depth_width, depth_height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                                    //     Bitmap colorBitmap = new Bitmap(depth_width, depth_height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                                       
+                                    //     Image depthImage = sensorCapture.Depth;
+                                    //     Image colorImage = transformation.ColorImageToDepthCamera(sensorCapture);
+                                    //     ushort[] depthArray = depthImage.GetPixels<ushort>().ToArray();
+                                    //     BGRA[] colorArray = colorImage.GetPixels<BGRA>().ToArray();
+                                    //     // BitmapData bitmapData = depthBitmap.LockBits(new Rectangle(0, 0, depthBitmap.Width, depthBitmap.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+                                    //     BitmapData bitmapData = colorBitmap.LockBits(new Rectangle(0, 0, colorBitmap.Width, colorBitmap.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+                                    //     //各ピクセルの値へのポインタ
+                                    //     byte* pixels = (byte*)bitmapData.Scan0;
+                                    //     int index = 0;
+                                    //     //一ピクセルずつ処理
+                                    //     for (int i = 0; i < colorArray.Length; i++)
+                                    //     {
+                                    //         pixels[index++] = colorArray[i].B;
+                                    //         pixels[index++] = colorArray[i].G;
+                                    //         pixels[index++] = colorArray[i].R;
+                                    //         pixels[index++] = 255;//Alpha値を固定して不透過に
+                                    //     }
+                                    //     //書き込み終了
+                                    //     colorBitmap.UnlockBits(bitmapData);
+                                    //     string string_now = renderer.now.ToString("HHmmssfff");
+                                    //     colorBitmap.Save($@"{PosSaver.path}\{renderer.day}\{renderer.scene}\depth\{string_now}.png", System.Drawing.Imaging.ImageFormat.Png);
+                                    //     colorBitmap.Dispose();
+                                    // }
                                 }
                             }
 
