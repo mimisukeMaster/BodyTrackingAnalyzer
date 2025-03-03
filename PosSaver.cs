@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Csharp_3d_viewer
 {
@@ -33,6 +34,15 @@ namespace Csharp_3d_viewer
         public static string path = @"..\..\..\..\..\temp"; 
 
         public DateTime now = DateTime.Now;
+
+        // ラベル用の難易度指定
+        public int Mode { get; private set; } = 0;
+        private bool isModeSet = false;
+
+        public void SetMode(int mode)
+        {
+            Mode = mode;
+        }
 
         public void StartVisualizationThread()
         {
@@ -62,9 +72,30 @@ namespace Csharp_3d_viewer
                     nativeWindow.Create(0, 0, 640, 480, NativeWindowStyle.Overlapped);
 
                     nativeWindow.Show();
+
+                    // 別スレッドでユーザーからのラベル入力を受け付ける
+                    GetUserModeInput();
+
                     nativeWindow.Run();
                 }
             });
+        }
+
+        private void GetUserModeInput()
+        {
+            while (!isModeSet) // まだラベルが設定されていない場合のみループ
+            {
+                Console.Write("ラベルの番号を入力してください（整数値）: ");
+                string input = Console.ReadLine();
+
+                if (int.TryParse(input, out int mode))
+                {
+                    SetMode(mode);
+                    Console.WriteLine($"ラベル番号 {mode} の計測を行います");
+                    isModeSet = true;
+                }
+                else Console.WriteLine("無効な入力\n整数値を入力してください");
+            }
         }
 
         private void NativeWindow_ContextCreated(object sender, NativeWindowEventArgs e)
@@ -90,10 +121,8 @@ namespace Csharp_3d_viewer
         {
             using (var lastFrame = visualizerData.TakeFrameWithOwnership())
             {
-                if (lastFrame == null)
-                {
-                    return;
-                }
+                if (lastFrame == null) return;
+                
                 NativeWindow nativeWindow = (NativeWindow)sender;
 
                 // GUI描画する場合
@@ -146,7 +175,7 @@ namespace Csharp_3d_viewer
                         {
                             now = DateTime.Now;
                             string string_now = now.ToString("HHmmssfff");
-                            sw.Write("{0}, ", string_now);
+                            sw.Write("{0}, {1}", Mode, string_now);
                             for (int jointId = 0; jointId < (int)JointId.Count; ++jointId)
                             {
                                 var joint = skeleton.GetJoint(jointId);
