@@ -71,4 +71,4 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 5. You can analyze the recorded data using [`analyze.py`](analyze.py). After running `analyze.py`, enter the folder where the CSV file is saved in the terminal step by step. By default, it is saved in `temp/{date}\{time}\{person ID}\pos.csv`.
 
 ## License
-AKrecorder is under the [MIT](LICENSE) license.
+AKRecorder is under the [MIT](LICENSE) license.
