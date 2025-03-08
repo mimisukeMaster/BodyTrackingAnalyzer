@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-
 # 各点の名前（Azure Kinectの定義）
 joint_names = [
     "PELVIS", "SPINE_NAVAL", "SPINE_CHEST", "NECK",
@@ -38,10 +37,11 @@ def plot_scatter_from_csv(base_folder, sub_folder):
     # ラベル番号を取得
     labels = df.iloc[:, 0].unique()
 
-    # 3Dプロットを作成
-    fig = plt.figure(figsize=(12, 7))
-    ax = fig.add_subplot(111, projection='3d')
+    # 図全体のレイアウトを作成（1行2列）
+    fig = plt.figure(figsize=(14, 6))
 
+    # 3Dプロットを作成（左側）
+    ax1 = fig.add_subplot(121, projection='3d')
     all_x, all_y, all_z = [], [], []
 
     for label in labels:
@@ -52,7 +52,7 @@ def plot_scatter_from_csv(base_folder, sub_folder):
             x = df_label.iloc[:, 2 + i * 3]
             y = df_label.iloc[:, 3 + i * 3]
             z = df_label.iloc[:, 4 + i * 3]
-            ax.scatter(x, y, z, color=joint_colors[joint_name], label=f"{joint_name}" if label == labels[0] else "")
+            ax1.scatter(x, y, z, color=joint_colors[joint_name], label=f"{joint_name}" if label == labels[0] else "")
 
             # NaN(欠損値)を除外してリストに追加
             all_x.extend(x.dropna())
@@ -69,17 +69,40 @@ def plot_scatter_from_csv(base_folder, sub_folder):
         std_x, std_y, std_z = 0, 0, 0
         range_x, range_y, range_z = 0, 0, 0
 
-    # グラフ内に統計情報を描画
-    stats_text = f"standard deviation: X={std_x:.2f}, Y={std_y:.2f}, Z={std_z:.2f}\n" \
-                f"range: X={range_x:.2f}, Y={range_y:.2f}, Z={range_z:.2f}"
-    
-    ax.text2D(0.25, 0.0, stats_text, transform=ax.transAxes, fontsize=12, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.7))
+    # 3Dグラフの設定
+    ax1.set_xlabel("X")
+    ax1.set_ylabel("Y")
+    ax1.set_zlabel("Z")
+    ax1.set_title("3D Scatter Plot of Joint Positions")
+    ax1.legend(fontsize=7, loc="upper right", bbox_to_anchor=(1.15, 1.1))
 
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    ax.set_title("3D Scatter Plot of Joint Positions")
-    ax.legend(fontsize=7, loc="upper right", bbox_to_anchor=(1.13, 1.15)) 
+    # 統計情報の棒グラフを作成（右側）
+    ax2 = fig.add_subplot(122)
+    categories = ['X', 'Y', 'Z']
+
+    std_values = [std_x, std_y, std_z]
+    range_values = [range_x, range_y, range_z]
+
+    x_positions = np.arange(len(categories))
+
+    # 2軸を作成
+    ax2.bar(x_positions - 0.2, std_values, 0.4, label="Standard Deviation", color="royalblue")
+    ax3 = ax2.twinx()
+    ax3.bar(x_positions + 0.2, range_values, 0.4, label="Range", color="tomato")
+
+    # 軸とラベル設定
+    ax2.set_xticks(x_positions)
+    ax2.set_xticklabels(categories)
+    ax2.set_ylabel("Standard Deviation", color="royalblue")
+    ax3.set_ylabel("Range", color="tomato")
+
+    # 凡例をそれぞれの軸で追加
+    ax2.legend(loc="upper left", fontsize=10)
+    ax3.legend(loc="upper right", fontsize=10)
+
+    ax2.set_title("Statistics of Joint Positions")
+
+    plt.tight_layout()
     plt.show()
 
 # 使用例

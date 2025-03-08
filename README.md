@@ -2,9 +2,9 @@
 ## Overview
 Azure Kinect DK を使用した人体録画＆分析ツール
 
-人体を検知している間、録画を行います。検知されていなければ録画は行われません。<br>また、関節の位置をcsv形式で保存し、録画セッションごとに分けてPNG画像を保存します。
+人体を検知している間、録画を行います。検知されていなければ録画は行われません。<br>また、関節の位置をcsv形式で保存し、任意で録画セッションごとに分けてPNG画像を保存しできます。
 
-csvファイルについては、一行に１フレーム分のデータが以下のような形で格納されています。
+csvファイルについては、一行に1フレーム分のデータが以下のような形で格納されています。
 ```csv
 {ラベル番号}, {時刻(時分秒ミリ秒)}, {0点目のx座標}, {0点目のy座標}, {0点目のz座標}, {1点目のx座標}, {1点目y座標}, {1点目z座標}, ...( * 32 点分)...
 6, 134210093202.8218, 7.189494, 954.5975,217.9923, -109.9409, 964.8756,235.1705,...
@@ -16,7 +16,7 @@ csvファイルについては、一行に１フレーム分のデータが以�
 Recorder for Azure Kinect
 
 Start recording a human when he or she appears, otherwise not.<br>
-Also, saving joint positions in a csv format and color PNG images every human.
+Also, saving joint positions in a csv format and color PNG images every human (optional).
 
 [Example Movie at a living lab](https://youtu.be/yrhxCEUvvkY)
 
