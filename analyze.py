@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.widgets import Button
 
-# Azure Kinectの関節名
+# 各点の名前（Azure Kinectの定義）
 joint_names = [
     "PELVIS", "SPINE_NAVAL", "SPINE_CHEST", "NECK", 
     "CLAVICLE_LEFT", "SHOULDER_LEFT", "ELBOW_LEFT", "WRIST_LEFT", "HAND_LEFT", "HANDTIP_LEFT", "THUMB_LEFT", 
@@ -15,7 +15,7 @@ joint_names = [
     "HEAD", "NOSE", "EYE_LEFT", "EAR_LEFT", "EYE_RIGHT", "EAR_RIGHT"
 ]
 
-# 各関節に対応する色
+# 各点に対応する色
 joint_colors = {
     "PELVIS": "navy", "SPINE_NAVAL": "blue", "SPINE_CHEST": "dodgerblue", "NECK": "deepskyblue", 
     "CLAVICLE_LEFT": "limegreen", "SHOULDER_LEFT": "forestgreen", "ELBOW_LEFT": "mediumseagreen", 
@@ -28,11 +28,11 @@ joint_colors = {
     "EYE_RIGHT": "khaki", "EAR_RIGHT": "goldenrod"
 }
 
-# 各点の数（Azure Kinect の定義）
-joint_count = 32
+# 点の数（Azure Kinect の定義）
+joint_count = len(joint_names)
 
 def load_data(date_folder):
-    """ 指定した日付フォルダ内のすべてのCSVファイルを取得し、ラベルごとにデータを整理 """
+    """ 指定した日付フォルダ内のすべてのCSVファイルを取得し、ラベルごとに整理 """
     base_path = os.path.join("temp", date_folder)
     data = {}
 
@@ -45,65 +45,44 @@ def load_data(date_folder):
 
         if os.path.exists(file_path):
             df = pd.read_csv(file_path, header=None)
-
             if df.empty:
                 print(f"警告: {file_path} が空です。スキップします。")
-                continue  # 空のファイルはスキップ
+                continue
 
             label = df.iloc[0, 0]  # 各CSVのラベル番号
-
-            if label not in data:
-                data[label] = []
-            data[label].append(df)
+            data.setdefault(label, []).append(df)
 
     return data
+
+def compute_joint_statistics(df_list):
+    """ 各関節ごとの座標の標準偏差と範囲を計算 """
+    std_values, range_values = [], []
+
+    for i in range(joint_count):
+        xyz = np.array([df.iloc[:, 2 + i*3:5 + i*3].dropna().values for df in df_list])
+        if xyz.size == 0:
+            continue
+        
+        xyz_flat = xyz.reshape(-1, 3)
+        
+        # 関節の座標データから指標を計算
+        std_xyz = np.nanstd(xyz_flat, axis=0)
+        range_xyz = np.nanmax(xyz_flat, axis=0) - np.nanmin(xyz_flat, axis=0)
+        std_values.append(np.mean(std_xyz))
+        range_values.append(np.mean(range_xyz))
+
+    # 3軸の標準偏差・範囲の平均を各点分集め、それらの平均をそのラベル全体のばらつき・範囲の指標とする
+    return np.nanmean(std_values), np.nanmean(range_values)
 
 def compute_statistics(data):
     """ 各ラベルごとに統計情報を算出 """
     stats = {}
 
     for label, df_list in data.items():
-        all_x, all_y, all_z = [], [], []
-
-        for df in df_list:
-            for i in range(joint_count):
-                x = df.iloc[:, 2 + i * 3].dropna()
-                y = df.iloc[:, 3 + i * 3].dropna()
-                z = df.iloc[:, 4 + i * 3].dropna()
-
-                all_x.extend(x)
-                all_y.extend(y)
-                all_z.extend(z)
-
-        all_x, all_y, all_z = np.array(all_x), np.array(all_y), np.array(all_z)
-
-        if all_x.size == 0 or all_y.size == 0 or all_z.size == 0:
-            print(f"警告: ラベル {label} のデータが不足しているため、統計情報を計算できません。")
-            stats[label] = {"mean_std": np.nan, "mean_range": np.nan}
-            continue
-
-        std_values = []
-        range_values = []
-
-        for i in range(joint_count):
-            x = np.array([df.iloc[:, 2 + i * 3].dropna() for df in df_list]).flatten()
-            y = np.array([df.iloc[:, 3 + i * 3].dropna() for df in df_list]).flatten()
-            z = np.array([df.iloc[:, 4 + i * 3].dropna() for df in df_list]).flatten()
-
-            if x.size == 0 or y.size == 0 or z.size == 0:
-                continue  # データがない場合はスキップ
-
-            std_x, std_y, std_z = np.nanstd(x), np.nanstd(y), np.nanstd(z)
-            range_x = np.nanmax(x) - np.nanmin(x) if x.size > 0 else np.nan
-            range_y = np.nanmax(y) - np.nanmin(y) if y.size > 0 else np.nan
-            range_z = np.nanmax(z) - np.nanmin(z) if z.size > 0 else np.nan
-
-            std_values.append(np.mean([std_x, std_y, std_z]))
-            range_values.append(np.mean([range_x, range_y, range_z]))
-
+        mean_std, mean_range = compute_joint_statistics(df_list)
         stats[label] = {
-            "mean_std": np.nanmean(std_values) if std_values else np.nan,
-            "mean_range": np.nanmean(range_values) if range_values else np.nan
+            "mean_std": mean_std,
+            "mean_range": mean_range
         }
 
     return stats
@@ -138,29 +117,26 @@ def plot_3d_scatter(ax, data, current_label):
     for df in df_list:
         for i in range(joint_count):
             joint_name = joint_names[i]
-            x = df.iloc[:, 2 + i * 3]
-            y = df.iloc[:, 3 + i * 3]
-            z = df.iloc[:, 4 + i * 3]
-
-            # 各点に名前と色を設定
+            x, y, z = df.iloc[:, 2 + i*3], df.iloc[:, 3 + i*3], df.iloc[:, 4 + i*3]
             ax.scatter(x, y, z, label=joint_name, color=joint_colors[joint_name], alpha=0.7)
 
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
     ax.set_title(f"3D Scatter Plot (Label: {current_label})")
-    ax.legend(loc="upper left", fontsize=8)
+    ax.legend(loc="upper left", fontsize=7)
 
 def update_plot(event, data, ax2, current_label_text):
     """ ボタンが押されたときにプロットを更新 """
-    current_label = int(current_label_text[0])  # ラベル番号を取得
+    current_label = int(current_label_text[0])
     label_list = list(data.keys())
     
     # ラベル番号の更新
     next_label = label_list[(label_list.index(current_label) + 1) % len(label_list)]
     current_label_text[0] = str(next_label)  # 次のラベル番号を保存
     
-    plot_3d_scatter(ax2, data, next_label)  # 散布図を更新
+    # 散布図を更新
+    plot_3d_scatter(ax2, data, next_label)
     plt.draw()
 
 # メイン処理
@@ -184,8 +160,8 @@ else:
     plot_3d_scatter(ax2, data, current_label)
 
     # ボタンの作成
-    ax_button = fig.add_axes([0.85, 0.05, 0.1, 0.075])  # ボタンの位置
-    button = Button(ax_button, "Next Label")
+    ax_button = fig.add_axes([0.93, 0.03, 0.05, 0.055])
+    button = Button(ax_button, "Next")
     current_label_text = [str(current_label)]  # 現在のラベルを格納
     button.on_clicked(lambda event: update_plot(event, data, ax2, current_label_text))
 
