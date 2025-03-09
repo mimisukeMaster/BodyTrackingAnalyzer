@@ -124,7 +124,7 @@ def plot_3d_scatter(ax, data, current_label):
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
     ax.set_title(f"3D Scatter Plot (Label: {current_label})")
-    ax.legend(loc="upper left", fontsize=7)
+    ax.legend(bbox_to_anchor=(0.05, 1), loc="upper right", fontsize=7)
 
 def update_plot(event, data, ax2, current_label_text):
     """ ボタンが押されたときにプロットを更新 """
@@ -165,5 +165,5 @@ else:
     current_label_text = [str(current_label)]  # 現在のラベルを格納
     button.on_clicked(lambda event: update_plot(event, data, ax2, current_label_text))
 
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, wspace=0.4)
     plt.show()
