@@ -47,13 +47,29 @@ Also, saving joint positions in a csv format and color PNG images every human (o
 
 5. `ESC`キー、または`Ctrl + C`で終了します。
 
-6. [`analyze.py`](analyze.py)で記録したデータの分析ができます。`analyze.py`を実行後、ターミナルからCSVファイルが保存されているフォルダを順に入力してください。通常は`temp/{日付}\{時間}\{人の識別番号}\pos.csv`に保存されています。
+6. [`analyze.py`](analyze.py)で記録したデータの分析ができます。`analyze.py`を実行後、ターミナルからCSVファイルが保存されているフォルダを順に入力してください。通常は`temp/{日付}/{時間}/{人の識別番号}/pos.csv`に保存されています。
 
 Visual Studio 2022では基本的にC++、C#の開発に注力しているので、Pythonの実行はセットアップの手間が無いVSCodeを使用することを推奨します。
 
 Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https://zenn.dev/mom/articles/4fd7c02bcc9087)を参照して下さい。
 
-### データの分析手法について
+===================================
+
+1. Build `Csharp_3d_viewer.sln`.
+
+2. Click `Debug > Start without debugging` to begin.
+
+3. Right after starting, set labels for the recorded data from the console screen.
+> [!WARNING]
+> - Just before and right after starting, **make sure to capture an empty scene without people**.
+> - Only start capturing people **after setting labels for the recorded data**.
+> (This is because the current timestamp will be obtained when no human is detected and used later when saving data along with the labels.)
+
+4. Press `ESC` key or `Ctrl + C` to exit.
+
+5. You can analyze the recorded data using [`analyze.py`](analyze.py). After running `analyze.py`, enter the folder where the CSV file is saved in the terminal step by step. By default, it is saved in `temp/{date}\{time}\{person ID}\pos.csv`.
+ 
+## Analysis Methods on `analyze.py`
 `analyze.py`では記録したデータから次の3つの指標を算出しています。
 - **平均標準偏差 $S$**
     - 以下のように定義しています：
@@ -69,8 +85,8 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 
         $$S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}$$
 
-- **平均空間分布幅**
-    - 以下のように定義定義しています：
+- **平均空間分布幅 $R$**
+    - 以下のように定義しています：
     1. 各軸の値の範囲を求める
 
         $$R_x = \max(x_t) - \min(x_t),\ R_y = \max(y_t) - \min(y_t),\ R_z = \max(z_t) - \min(z_t)$$
@@ -88,22 +104,6 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 
 ===================================
 
-1. Build `Csharp_3d_viewer.sln`.
-
-2. Click `Debug > Start without debugging` to begin.
-
-3. Right after starting, set labels for the recorded data from the console screen.
-> [!WARNING]
-> - Just before and right after starting, **make sure to capture an empty scene without people**.
-> - Only start capturing people **after setting labels for the recorded data**.
-> (This is because the current timestamp will be obtained when no human is detected and used later when saving data along with the labels.)
-
-4. Press `ESC` key or `Ctrl + C` to exit.
-
-5. You can analyze the recorded data using [`analyze.py`](analyze.py). After running `analyze.py`, enter the folder where the CSV file is saved in the terminal step by step. By default, it is saved in `temp/{date}\{time}\{person ID}\pos.csv`.
-
-### Data Analysis Methods  
-
 In `analyze.py`, three key metrics are calculated from the recorded data:  
 
 - **Mean Standard Deviation $S$**  
@@ -114,7 +114,7 @@ In `analyze.py`, three key metrics are calculated from the recorded data:
 
     3. Perform steps 1 and 2 for all 32 points and take their mean to define the indicator $S$
 
-- **Mean Spatial Distribution Range**  
+- **Mean Spatial Distribution Range $R$**  
     - Defined as follows:  
     1. Compute the range of values for each axis
 
