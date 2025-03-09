@@ -56,7 +56,7 @@ namespace Csharp_3d_viewer
                                     //     int depth_height = device.GetCalibration().DepthCameraCalibration.ResolutionHeight;
                                     //     // Bitmap depthBitmap = new Bitmap(depth_width, depth_height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                                     //     Bitmap colorBitmap = new Bitmap(depth_width, depth_height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                                       
+                                    
                                     //     Image depthImage = sensorCapture.Depth;
                                     //     Image colorImage = transformation.ColorImageToDepthCamera(sensorCapture);
                                     //     ushort[] depthArray = depthImage.GetPixels<ushort>().ToArray();
