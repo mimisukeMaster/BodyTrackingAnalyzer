@@ -58,31 +58,31 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 - **平均標準偏差 $S$**
     - 以下のように定義しています：
     1. 各軸の時間変化による値の標準偏差を求める
-    $$
-    \sigma_x = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (x_t - \bar{x})^2},\ \sigma_y = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (y_t - \bar{y})^2},\ \sigma_z = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (z_t - \bar{z})^2}
-    $$
+
+        $$\sigma_x = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (x_t - \bar{x})^2},\ \sigma_y = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (y_t - \bar{y})^2},\ \sigma_z = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (z_t - \bar{z})^2}$$
+
     2. 各軸の標準偏差の平均を求める
-    $$
-    \sigma_{i} = \frac{\sigma_x + \sigma_y + \sigma_z}{3}
-    $$
+
+        $$\sigma_{i} = \frac{\sigma_x + \sigma_y + \sigma_z}{3}$$
+
     3. 全 $32$ 点分について 1. 2. を行い、その平均を指標 $S$ とする
-    $$
-    S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}
-    $$
+
+        $$S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}$$
+
 - **平均空間分布幅**
     - 以下のように定義定義しています：
     1. 各軸の値の範囲を求める
-    $$
-    R_x = \max(x_t) - \min(x_t),\ R_y = \max(y_t) - \min(y_t),\ R_z = \max(z_t) - \min(z_t)
-    $$
+
+        $$R_x = \max(x_t) - \min(x_t),\ R_y = \max(y_t) - \min(y_t),\ R_z = \max(z_t) - \min(z_t)$$
+
     2. 各軸の範囲の平均をとる
-    $$
-    R_{\text{i}} = \frac{R_x + R_y + R_z}{3}
-    $$
+
+        $$R_{\text{i}} = \frac{R_x + R_y + R_z}{3}$$
+
     3. 全 $32$ 点分について 1. 2. を行い、その平均を指標 $R$ とする
-    $$
-    R = \frac{1}{32} \sum_{i=1}^{32} R_{\text{i}}
-    $$
+
+        $$R = \frac{1}{32} \sum_{i=1}^{32} R_{\text{i}}$$
+
 - **3次元散布図**
     - 各ラベルごとに、全32点の位置を3次元空間上にプロットします。`Next`ボタンで閲覧するラベル番号を変えることができます。
 
@@ -108,33 +108,19 @@ In `analyze.py`, three key metrics are calculated from the recorded data:
 
 - **Mean Standard Deviation $S$**  
     - Defined as follows:  
-    1. Compute the standard deviation of each axis over time:  
-    $$  
-    \sigma_x = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (x_t - \bar{x})^2},\ \sigma_y = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (y_t - \bar{y})^2},\ \sigma_z = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (z_t - \bar{z})^2}  
-    $$  
-    2. Compute the mean of the standard deviations across the three axes:  
-    $$  
-    \sigma_{i} = \frac{\sigma_x + \sigma_y + \sigma_z}{3}  
-    $$  
-    3. Perform steps 1 and 2 for all 32 points and take their mean to define the indicator $S$:  
-    $$  
-    S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}  
-    $$  
+    1. Compute the standard deviation of each axis over time
+
+    2. Compute the mean of the standard deviations across the three axes
+
+    3. Perform steps 1 and 2 for all 32 points and take their mean to define the indicator $S$
 
 - **Mean Spatial Distribution Range**  
     - Defined as follows:  
-    1. Compute the range of values for each axis:  
-    $$  
-    R_x = \max(x_t) - \min(x_t),\ R_y = \max(y_t) - \min(y_t),\ R_z = \max(z_t) - \min(z_t)  
-    $$  
-    2. Compute the mean range across the three axes:  
-    $$  
-    R_{\text{i}} = \frac{R_x + R_y + R_z}{3}  
-    $$  
-    3. Perform steps 1 and 2 for all 32 points and take their mean to define the indicator $R$:  
-    $$  
-    R = \frac{1}{32} \sum_{i=1}^{32} R_{\text{i}}  
-    $$  
+    1. Compute the range of values for each axis
+
+    2. Compute the mean range across the three axes
+
+    3. Perform steps 1 and 2 for all 32 points and take their mean to define the indicator $R$
 
 - **3D Scatter Plot**  
     - For each label, the positions of all 32 points are plotted in a 3D space. You can change the label number using the `Next` button.  
