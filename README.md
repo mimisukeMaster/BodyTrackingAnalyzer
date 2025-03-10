@@ -68,7 +68,8 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 4. Press `ESC` key or `Ctrl + C` to exit.
 
 5. You can analyze the recorded data using [`analyze.py`](analyze.py). After running `analyze.py`, enter the folder where the CSV file is saved in the terminal step by step. By default, it is saved in `temp/{date}\{time}\{person ID}\pos.csv`.
- 
+
+
 ## Analysis Methods on `analyze.py`
 `analyze.py`では記録したデータから次の3つの指標を算出しています。
 - **平均標準偏差 $S$**

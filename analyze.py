@@ -55,8 +55,8 @@ def load_data(date_folder):
     return data
 
 def compute_joint_statistics(df_list):
-    """ 各関節ごとの座標の標準偏差と範囲を計算 """
-    std_values, range_values = [], []
+    """ 各関節ごとの座標の標準偏差を計算 """
+    std_values = []
 
     for i in range(joint_count):
         xyz = np.array([df.iloc[:, 2 + i*3:5 + i*3].dropna().values for df in df_list])
@@ -67,22 +67,19 @@ def compute_joint_statistics(df_list):
         
         # 関節の座標データから指標を計算
         std_xyz = np.nanstd(xyz_flat, axis=0)
-        range_xyz = np.nanmax(xyz_flat, axis=0) - np.nanmin(xyz_flat, axis=0)
         std_values.append(np.mean(std_xyz))
-        range_values.append(np.mean(range_xyz))
 
-    # 3軸の標準偏差・範囲の平均を各点分集め、それらの平均をそのラベル全体のばらつき・範囲の指標とする
-    return np.nanmean(std_values), np.nanmean(range_values)
+    # 3軸の標準偏差の平均を各点分集め、それらの平均をそのラベル全体のばらつきの指標とする
+    return np.nanmean(std_values)
 
 def compute_statistics(data):
     """ 各ラベルごとに統計情報を算出 """
     stats = {}
 
     for label, df_list in data.items():
-        mean_std, mean_range = compute_joint_statistics(df_list)
+        mean_std = compute_joint_statistics(df_list)
         stats[label] = {
-            "mean_std": mean_std,
-            "mean_range": mean_range
+            "mean_std": mean_std
         }
 
     return stats
@@ -91,23 +88,15 @@ def plot_statistics(ax, stats):
     """ ラベルごとの統計情報を棒グラフで表示 """
     labels = list(stats.keys())
     mean_std = [stats[label]["mean_std"] for label in labels]
-    mean_range = [stats[label]["mean_range"] for label in labels]
 
     x_positions = np.arange(len(labels))
 
-    ax.bar(x_positions - 0.2, mean_std, 0.4, label="Mean Standard Deviation", color="royalblue")
-    ax2 = ax.twinx()
-    ax2.bar(x_positions + 0.2, mean_range, 0.4, label="Mean Range", color="tomato")
+    ax.bar(x_positions, mean_std, 0.4, color="royalblue")
 
     ax.set_xticks(x_positions)
     ax.set_xticklabels(labels)
-    ax.set_ylabel("Mean Standard Deviation", color="royalblue")
-    ax2.set_ylabel("Mean Range", color="tomato")
 
-    ax.legend(loc="upper left", fontsize=10)
-    ax2.legend(loc="upper right", fontsize=10)
-
-    ax.set_title("Statistics of Joint Positions")
+    ax.set_title("Mean Standard Deviation for each labels")
 
 def plot_3d_scatter(ax, data, current_label):
     """ 3D散布図を表示 """
@@ -117,8 +106,12 @@ def plot_3d_scatter(ax, data, current_label):
     for df in df_list:
         for i in range(joint_count):
             joint_name = joint_names[i]
-            x, y, z = df.iloc[:, 2 + i*3], df.iloc[:, 3 + i*3], df.iloc[:, 4 + i*3]
-            ax.scatter(x, y, z, label=joint_name, color=joint_colors[joint_name], alpha=0.7)
+            # Azure Kinect の座標系に合わせて変換する
+            new_x = df.iloc[:, 4 + i * 3] # 元 z座標
+            new_y = df.iloc[:, 3 + i * 3] # 元 y座標
+            new_z = -1 * df.iloc[:, 2 + i * 3] # 元 x座標
+
+            ax.scatter(new_x, new_y, new_z, label=joint_name, color=joint_colors[joint_name], alpha=0.7)
 
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
