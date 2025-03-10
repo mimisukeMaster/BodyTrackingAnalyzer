@@ -153,8 +153,8 @@ else:
     plot_3d_scatter(ax2, data, current_label)
 
     # ボタンの作成
-    ax_button = fig.add_axes([0.93, 0.03, 0.05, 0.055])
-    button = Button(ax_button, "Next")
+    ax_button = fig.add_axes([0.90, 0.03, 0.07, 0.055])
+    button = Button(ax_button, "Next label")
     current_label_text = [str(current_label)]  # 現在のラベルを格納
     button.on_clicked(lambda event: update_plot(event, data, ax2, current_label_text))
 
