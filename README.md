@@ -1,8 +1,10 @@
 # AKRecorder
 ## Overview
-Azure Kinect DK を使用した人体録画＆分析ツール
+Azure Kinect DK を使用した人体検知＆分析ツール
 
-人体を検知している間、録画を行います。検知されていなければ録画は行われません。<br>また、関節の位置をcsv形式で保存し、任意で録画セッションごとに分けてPNG画像を保存しできます。
+人体を検知している間、骨格の描画を行います。検知されていなければ行われません。<br>また、関節の座標をcsv形式で保存し、セッション後に座標の分布を分析することができます。
+
+任意で、録画したDepth画像をセッションごとにフォルダを分けて保存できます。
 
 csvファイルについては、一行に1フレーム分のデータが以下のような形で格納されています。
 ```csv
@@ -15,8 +17,8 @@ csvファイルについては、一行に1フレーム分のデータが以下�
 
 Recorder for Azure Kinect
 
-Start recording a human when he or she appears, otherwise not.<br>
-Also, saving joint positions in a csv format and color PNG images every human (optional).
+Start rendering bones when he or she appears, otherwise not.<br>
+Also, saving joint positions in a csv format and depth images every human (optional).
 
 [Example Movie at a living lab](https://youtu.be/yrhxCEUvvkY)
 
@@ -88,11 +90,11 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 
         $$S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}$$
 
-- また、各ラベルごとに、全ての点の時系列データを3次元空間上にプロットして散布図を描画します。`Next`ボタンで閲覧するラベル番号を変えることができます。
+- また、各ラベルごとに、全ての点の時系列データを3次元空間上にプロットして散布図を描画します。`Next label`ボタンで閲覧するラベル番号を変えることができます。
 
 ===================================
 
-- In `analyze.py`, the **Mean Standard Deviation (S)** is used as an indicator of data variation.
+- In `analyze.py`, the **Mean Standard Deviation** is used as an indicator of data variation.
 
     **Definition:**
     1. Compute the standard deviation of values over time for each axis.
@@ -101,7 +103,7 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 
     3. Perform steps 1 and 2 for all $32$ points and take the average to obtain the final indicator, **Mean Standard Deviation $S$**.
 
-- Additionally, for each label, all time-series data points are plotted in a 3D scatter plot. You can change the label number using the `Next` button to browse different datasets.
+- Additionally, for each label, all time-series data points are plotted in a 3D scatter plot. You can change the label number using the `Next label` button to browse different datasets.
 
 ## License
 AKRecorder is under the [MIT](LICENSE) license.
