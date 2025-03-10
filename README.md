@@ -71,37 +71,37 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 
 
 ## Analysis Methods on `analyze.py`
-`analyze.py`では記録したデータのばらつきを示す指標として、**平均標準偏差** というものを用いています。
+<p align="center"><img src="https://github.com/user-attachments/assets/cc3e8316-b27f-4b0e-b142-58077ceecd7f" width="600"></p>
 
-**定義：**
-1. 各軸の時間変化による値の標準偏差を求める
+- `analyze.py`では記録したデータのばらつきを示す指標として、**平均標準偏差** というものを用いています。
 
-    $$\sigma_x = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (x_t - \bar{x})^2},\ \sigma_y = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (y_t - \bar{y})^2},\ \sigma_z = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (z_t - \bar{z})^2}$$
+    **定義：**
+    1. 各軸の時間変化による値の標準偏差を求める
 
-2. 各軸の標準偏差の平均を求める
+        $$\sigma_x = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (x_t - \bar{x})^2},\ \sigma_y = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (y_t - \bar{y})^2},\ \sigma_z = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (z_t - \bar{z})^2}$$
 
-    $$\sigma_{i} = \frac{\sigma_x + \sigma_y + \sigma_z}{3}$$
+    2. 各軸の標準偏差の平均を求める
 
-3. 全 $32$ 点分について 1. 2. を行い、その平均を指標 **平均標準偏差 $S$** とする
+        $$\sigma_{i} = \frac{\sigma_x + \sigma_y + \sigma_z}{3}$$
 
-    $$S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}$$
+    3. 全 $32$ 点分について 1. 2. を行い、その平均を指標 **平均標準偏差 $S$** とする
 
-また、各ラベルごとに、全ての点の時系列データを3次元空間上にプロットして散布図を描画します。`Next`ボタンで閲覧するラベル番号を変えることができます。
+        $$S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}$$
+
+- また、各ラベルごとに、全ての点の時系列データを3次元空間上にプロットして散布図を描画します。`Next`ボタンで閲覧するラベル番号を変えることができます。
 
 ===================================
 
-In `analyze.py`, the **Mean Standard Deviation (S)** is used as an indicator of data variation.
+- In `analyze.py`, the **Mean Standard Deviation (S)** is used as an indicator of data variation.
 
-**Definition:**
-1. Compute the standard deviation of values over time for each axis.
+    **Definition:**
+    1. Compute the standard deviation of values over time for each axis.
 
-2. Calculate the mean of the standard deviations across all three axes.
+    2. Calculate the mean of the standard deviations across all three axes.
 
-3. Perform steps 1 and 2 for all $32$ points and take the average to obtain the final indicator, **Mean Standard Deviation $S$**.
+    3. Perform steps 1 and 2 for all $32$ points and take the average to obtain the final indicator, **Mean Standard Deviation $S$**.
 
-
-Additionally, for each label, all time-series data points are plotted in a 3D scatter plot.  
-You can change the label number using the `Next` button to browse different datasets.
+- Additionally, for each label, all time-series data points are plotted in a 3D scatter plot. You can change the label number using the `Next` button to browse different datasets.
 
 ## License
 AKRecorder is under the [MIT](LICENSE) license.
