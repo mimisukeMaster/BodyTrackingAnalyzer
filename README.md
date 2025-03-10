@@ -71,60 +71,37 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 
 
 ## Analysis Methods on `analyze.py`
-`analyze.py`では記録したデータから次の3つの指標を算出しています。
-- **平均標準偏差 $S$**
-    - 以下のように定義しています：
-    1. 各軸の時間変化による値の標準偏差を求める
+`analyze.py`では記録したデータのばらつきを示す指標として、**平均標準偏差** というものを用いています。
 
-        $$\sigma_x = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (x_t - \bar{x})^2},\ \sigma_y = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (y_t - \bar{y})^2},\ \sigma_z = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (z_t - \bar{z})^2}$$
+**定義：**
+1. 各軸の時間変化による値の標準偏差を求める
 
-    2. 各軸の標準偏差の平均を求める
+    $$\sigma_x = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (x_t - \bar{x})^2},\ \sigma_y = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (y_t - \bar{y})^2},\ \sigma_z = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (z_t - \bar{z})^2}$$
 
-        $$\sigma_{i} = \frac{\sigma_x + \sigma_y + \sigma_z}{3}$$
+2. 各軸の標準偏差の平均を求める
 
-    3. 全 $32$ 点分について 1. 2. を行い、その平均を指標 $S$ とする
+    $$\sigma_{i} = \frac{\sigma_x + \sigma_y + \sigma_z}{3}$$
 
-        $$S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}$$
+3. 全 $32$ 点分について 1. 2. を行い、その平均を指標 **平均標準偏差 $S$** とする
 
-- **平均空間分布幅 $R$**
-    - 以下のように定義しています：
-    1. 各軸の値の範囲を求める
+    $$S = \frac{1}{32} \sum_{i=1}^{32} \sigma_{i}$$
 
-        $$R_x = \max(x_t) - \min(x_t),\ R_y = \max(y_t) - \min(y_t),\ R_z = \max(z_t) - \min(z_t)$$
-
-    2. 各軸の範囲の平均をとる
-
-        $$R_{\text{i}} = \frac{R_x + R_y + R_z}{3}$$
-
-    3. 全 $32$ 点分について 1. 2. を行い、その平均を指標 $R$ とする
-
-        $$R = \frac{1}{32} \sum_{i=1}^{32} R_{\text{i}}$$
-
-- **3次元散布図**
-    - 各ラベルごとに、全32点の位置を3次元空間上にプロットします。`Next`ボタンで閲覧するラベル番号を変えることができます。
+また、各ラベルごとに、全ての点の時系列データを3次元空間上にプロットして散布図を描画します。`Next`ボタンで閲覧するラベル番号を変えることができます。
 
 ===================================
 
-In `analyze.py`, three key metrics are calculated from the recorded data:  
+In `analyze.py`, the **Mean Standard Deviation (S)** is used as an indicator of data variation.
 
-- **Mean Standard Deviation $S$**  
-    - Defined as follows:  
-    1. Compute the standard deviation of each axis over time
+**Definition:**
+1. Compute the standard deviation of values over time for each axis.
 
-    2. Compute the mean of the standard deviations across the three axes
+2. Calculate the mean of the standard deviations across all three axes.
 
-    3. Perform steps 1 and 2 for all 32 points and take their mean to define the indicator $S$
+3. Perform steps 1 and 2 for all $32$ points and take the average to obtain the final indicator, **Mean Standard Deviation $S$**.
 
-- **Mean Spatial Distribution Range $R$**  
-    - Defined as follows:  
-    1. Compute the range of values for each axis
 
-    2. Compute the mean range across the three axes
-
-    3. Perform steps 1 and 2 for all 32 points and take their mean to define the indicator $R$
-
-- **3D Scatter Plot**  
-    - For each label, the positions of all 32 points are plotted in a 3D space. You can change the label number using the `Next` button.  
+Additionally, for each label, all time-series data points are plotted in a 3D scatter plot.  
+You can change the label number using the `Next` button to browse different datasets.
 
 ## License
 AKRecorder is under the [MIT](LICENSE) license.
