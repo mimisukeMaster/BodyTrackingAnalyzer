@@ -120,38 +120,41 @@ def update_plot(event, data, ax2, current_label_text):
     """ ボタンが押されたときにプロットを更新 """
     current_label = int(current_label_text[0])
     label_list = list(data.keys())
-    
+
     # ラベル番号の更新
     next_label = label_list[(label_list.index(current_label) + 1) % len(label_list)]
     current_label_text[0] = str(next_label)  # 次のラベル番号を保存
-    
+
     # 散布図を更新
     plot_3d_scatter(ax2, data, next_label)
     plt.draw()
 
-# メイン処理
-data = load_data()
-if not data: exit("データが見つかりませんでした")
+def main():
+    data = load_data()
+    if not data: exit("データが見つかりませんでした")
 
-stats = compute_statistics(data)
+    stats = compute_statistics(data)
 
-# サブプロットの作成（1行2列）
-fig = plt.figure(figsize=(14, 7))
+    # サブプロットの作成（1行2列）
+    fig = plt.figure(figsize=(14, 7))
 
-# 左側に統計グラフ
-ax1 = fig.add_subplot(121)
-plot_statistics(ax1, stats)
+    # 左側に統計グラフ
+    ax1 = fig.add_subplot(121)
+    plot_statistics(ax1, stats)
 
-# 右側に3D散布図
-ax2 = fig.add_subplot(122, projection='3d')
-current_label = list(data.keys())[0]  # 最初のラベルを初期選択
-plot_3d_scatter(ax2, data, current_label)
+    # 右側に3D散布図
+    ax2 = fig.add_subplot(122, projection='3d')
+    current_label = list(data.keys())[0]  # 最初のラベルを初期選択
+    plot_3d_scatter(ax2, data, current_label)
 
-# ボタンの作成
-ax_button = fig.add_axes([0.90, 0.03, 0.07, 0.055])
-button = Button(ax_button, "Next label")
-current_label_text = [str(current_label)]  # 現在のラベルを格納
-button.on_clicked(lambda event: update_plot(event, data, ax2, current_label_text))
+    # ボタンの作成
+    ax_button = fig.add_axes([0.90, 0.03, 0.07, 0.055])
+    button = Button(ax_button, "Next label")
+    current_label_text = [str(current_label)]  # 現在のラベルを格納
+    button.on_clicked(lambda event: update_plot(event, data, ax2, current_label_text))
 
-fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, wspace=0.4)
-plt.show()
+    fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, wspace=0.4)
+    plt.show()
+
+if __name__ == "__main__":
+    main()
