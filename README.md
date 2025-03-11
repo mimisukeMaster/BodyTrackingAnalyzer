@@ -1,12 +1,10 @@
-# AKRecorder
+# BodyTrackingAnalyzer
 ## Overview
 Azure Kinect DK を使用した人体検知＆分析ツール
 
-人体を検知している間、骨格の描画を行います。検知されていなければ行われません。<br>また、関節の座標をcsv形式で保存し、セッション後に座標の分布を分析することができます。
+人体を検知している間、骨格の描画を行います。検知されていなければ行われません。<br>また、関節の座標をCSV形式で保存し、セッション後に座標の分布を分析することができます。
 
-任意で、録画したDepth画像をセッションごとにフォルダを分けて保存できます。
-
-csvファイルについては、一行に1フレーム分のデータが以下のような形で格納されています。
+CSVファイルには、一行に1フレーム分のデータが以下のような形で格納されています。
 ```csv
 {ラベル番号}, {時刻(時分秒ミリ秒)}, {0点目のx座標}, {0点目のy座標}, {0点目のz座標}, {1点目のx座標}, {1点目y座標}, {1点目z座標}, ...( * 32 点分)...
 6, 134210093202.8218, 7.189494, 954.5975,217.9923, -109.9409, 964.8756,235.1705,...
@@ -42,16 +40,12 @@ Also, saving joint positions in a csv format and depth images every human (optio
 3. `デバッグ > デバッグなしで開始` を選択して実行します。
 
 4. 開始直後は、コンソール画面から記録するデータへのラベルを設定してください。整数値を入力後、`Enter`キーで確定させます。 
-> [!WARNING]
-> - 開始直前と直後は **人がいないところを映してください**
-> - 人を映すのは、 **記録するデータへのラベルを設定した後にしてください**
->（人体検知外の時に現在時刻を取得し、ラベルとともにデータを保存する時に使用するため）
 
 5. `ESC`キー、または`Ctrl + C`で終了します。
 
-6. [`analyze.py`](analyze.py)で記録したデータの分析ができます。`analyze.py`を実行後、ターミナルからCSVファイルが保存されているフォルダを順に入力してください。通常は`temp/{日付}/{時間}/{人の識別番号}/pos.csv`に保存されています。
+6. [`analyze.py`](analyze.py)で記録したデータの分析ができます。`tmp`フォルダにCSVファイルが存在することを確認の上、`analyze.py`を実行してください。
 
-Visual Studio 2022では基本的にC++、C#の開発に注力しているので、Pythonの実行はセットアップの手間が無いVSCodeを使用することを推奨します。
+Visual Studio 2022では主にC++やC#の開発に注力しているため、Pythonの実行にはセットアップの手間が少ないVS Codeの使用を推奨します。
 
 Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https://zenn.dev/mom/articles/4fd7c02bcc9087)を参照して下さい。
 
@@ -62,14 +56,10 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 2. Click `Debug > Start without debugging` to begin.
 
 3. Right after starting, set labels for the recorded data from the console screen.
-> [!WARNING]
-> - Just before and right after starting, **make sure to capture an empty scene without people**.
-> - Only start capturing people **after setting labels for the recorded data**.
-> (This is because the current timestamp will be obtained when no human is detected and used later when saving data along with the labels.)
 
 4. Press `ESC` key or `Ctrl + C` to exit.
 
-5. You can analyze the recorded data using [`analyze.py`](analyze.py). After running `analyze.py`, enter the folder where the CSV file is saved in the terminal step by step. By default, it is saved in `temp/{date}\{time}\{person ID}\pos.csv`.
+5. You can analyze the recorded data using [`analyze.py`](analyze.py). Make sure that the CSV file exists in the `tmp` folder before running this script.
 
 
 ## Analysis Methods on `analyze.py`

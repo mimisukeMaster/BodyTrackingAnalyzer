@@ -31,26 +31,23 @@ joint_colors = {
 # 点の数（Azure Kinect の定義）
 joint_count = len(joint_names)
 
-def load_data(date_folder):
-    """ 指定した日付フォルダ内のすべてのCSVファイルを取得し、ラベルごとに整理 """
-    base_path = os.path.join("temp", date_folder)
+def load_data():
+    """ temp内のすべてのCSVファイルを取得し、ラベルごとに整理 """
     data = {}
 
-    if not os.path.exists(base_path):
-        print(f"指定されたフォルダ '{base_path}' が見つかりません。")
-        return data
-
-    for time_folder in os.listdir(base_path):
-        file_path = os.path.join(base_path, time_folder, "0", "pos.csv")
-
-        if os.path.exists(file_path):
-            df = pd.read_csv(file_path, header=None)
+    for file_name in os.listdir("temp"):
+        csv_path = os.path.join("temp", file_name)
+        if os.path.exists(csv_path):
+            df = pd.read_csv(csv_path, header=None)
             if df.empty:
-                print(f"警告: {file_path} が空です。スキップします。")
+                print(f"{csv_path} の中身が空のためスキップします")
                 continue
 
             label = df.iloc[0, 0]  # 各CSVのラベル番号
             data.setdefault(label, []).append(df)
+            # ラベル番号昇順に並び替え
+            data = dict(sorted(data.items()))
+        else: print(f"パス {csv_path} が存在しません")
 
     return data
 
@@ -107,9 +104,9 @@ def plot_3d_scatter(ax, data, current_label):
         for i in range(joint_count):
             joint_name = joint_names[i]
             # Azure Kinect の座標系に合わせて変換する
-            new_x = df.iloc[:, 4 + i * 3] # 元 z座標
-            new_y = df.iloc[:, 3 + i * 3] # 元 y座標
-            new_z = -1 * df.iloc[:, 2 + i * 3] # 元 x座標
+            new_x = df.iloc[:, 2 + i * 3] # 元 x座標
+            new_y = df.iloc[:, 4 + i * 3] # 元 z座標
+            new_z = -1 * df.iloc[:, 3 + i * 3] # 元 y座標
 
             ax.scatter(new_x, new_y, new_z, label=joint_name, color=joint_colors[joint_name], alpha=0.7)
 
@@ -133,30 +130,28 @@ def update_plot(event, data, ax2, current_label_text):
     plt.draw()
 
 # メイン処理
-date_folder = input("日付フォルダ名を入力してください（例: 20250303）: ")
-data = load_data(date_folder)
-if not data:
-    print("データが見つかりませんでした。")
-else:
-    stats = compute_statistics(data)
+data = load_data()
+if not data: exit("データが見つかりませんでした")
 
-    # サブプロットの作成（1行2列）
-    fig = plt.figure(figsize=(14, 7))
+stats = compute_statistics(data)
 
-    # 左側に統計グラフ
-    ax1 = fig.add_subplot(121)
-    plot_statistics(ax1, stats)
+# サブプロットの作成（1行2列）
+fig = plt.figure(figsize=(14, 7))
 
-    # 右側に3D散布図
-    ax2 = fig.add_subplot(122, projection='3d')
-    current_label = list(data.keys())[0]  # 最初のラベルを初期選択
-    plot_3d_scatter(ax2, data, current_label)
+# 左側に統計グラフ
+ax1 = fig.add_subplot(121)
+plot_statistics(ax1, stats)
 
-    # ボタンの作成
-    ax_button = fig.add_axes([0.90, 0.03, 0.07, 0.055])
-    button = Button(ax_button, "Next label")
-    current_label_text = [str(current_label)]  # 現在のラベルを格納
-    button.on_clicked(lambda event: update_plot(event, data, ax2, current_label_text))
+# 右側に3D散布図
+ax2 = fig.add_subplot(122, projection='3d')
+current_label = list(data.keys())[0]  # 最初のラベルを初期選択
+plot_3d_scatter(ax2, data, current_label)
 
-    fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, wspace=0.4)
-    plt.show()
+# ボタンの作成
+ax_button = fig.add_axes([0.90, 0.03, 0.07, 0.055])
+button = Button(ax_button, "Next label")
+current_label_text = [str(current_label)]  # 現在のラベルを格納
+button.on_clicked(lambda event: update_plot(event, data, ax2, current_label_text))
+
+fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, wspace=0.4)
+plt.show()
