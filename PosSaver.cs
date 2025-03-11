@@ -6,13 +6,12 @@ using System.IO;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace Csharp_3d_viewer
 {
     public class PosSaver
     {
-        // GUI描画する場合
+        // GUI描画用のレンダラー群
         private SphereRenderer SphereRenderer;
         private CylinderRenderer CylinderRenderer;
         private PointCloudRenderer PointCloudRenderer;
@@ -22,26 +21,32 @@ namespace Csharp_3d_viewer
         public PosSaver(VisualizerData visualizerData)
         {
             this.visualizerData = visualizerData;
+
+            // 実行開始時に一意のCSVファイル名を生成（tempフォルダ直下）
+            csvFileName = $@"{path}\pos_{DateTime.Now.ToString("yyyyMMdd_HHmmssfff")}.csv";
+            
+            // tempフォルダが存在しなければ作成
+            Directory.CreateDirectory(path);
         }
 
         public bool IsActive { get; private set; }
-
         public bool IsHuman { get; private set; } = false;
 
-        public string day;
-        public string scene;
+        // ラベル用の難易度指定
+        public int Label { get; private set; } = 0;
+        private bool isLabelSet = false;
 
-        public static string path = @"..\..\..\..\..\temp"; 
+        // 出力先フォルダ（temp直下にCSVを作成する）
+        public static string path = @"..\..\..\..\..\temp";
+
+        // 実行ごとに一意なCSVファイル名
+        private readonly string csvFileName;
 
         public DateTime now = DateTime.Now;
 
-        // ラベル用の難易度指定
-        public int Mode { get; private set; } = 0;
-        private bool isModeSet = false;
-
-        public void SetMode(int mode)
+        public void SetLabel(int label)
         {
-            Mode = mode;
+            Label = label;
         }
 
         public void StartVisualizationThread()
@@ -83,16 +88,16 @@ namespace Csharp_3d_viewer
 
         private void GetUserModeInput()
         {
-            while (!isModeSet) // まだラベルが設定されていない場合のみループ
+            while (!isLabelSet)
             {
                 Console.Write("ラベルの番号を入力してください（整数値）: ");
                 string input = Console.ReadLine();
 
-                if (int.TryParse(input, out int mode))
+                if (int.TryParse(input, out int label))
                 {
-                    SetMode(mode);
-                    Console.WriteLine($"ラベル番号 {mode} の計測を行います");
-                    isModeSet = true;
+                    SetLabel(label);
+                    Console.WriteLine($"ラベル番号 {label} の計測を行います");
+                    isLabelSet = true;
                 }
                 else Console.WriteLine("無効な入力\n整数値を入力してください");
             }
@@ -122,10 +127,10 @@ namespace Csharp_3d_viewer
             using (var lastFrame = visualizerData.TakeFrameWithOwnership())
             {
                 if (lastFrame == null) return;
-                
+
                 NativeWindow nativeWindow = (NativeWindow)sender;
 
-                // GUI描画する場合
+                // GUI描画処理
                 Gl.Viewport(0, 0, (int)nativeWindow.Width, (int)nativeWindow.Height);
                 Gl.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -134,7 +139,7 @@ namespace Csharp_3d_viewer
 
                 if (lastFrame.NumberOfBodies > 0)
                 {
-                    // GUI描画する場合
+                    // レンダラーにカメラ情報を設定
                     SphereRenderer.View = view;
                     SphereRenderer.Projection = proj;
 
@@ -147,87 +152,52 @@ namespace Csharp_3d_viewer
                     PointCloud.ComputePointCloud(lastFrame.Capture.Depth, ref pointCloud);
                     PointCloudRenderer.Render(pointCloud, new Vector4(1, 1, 1, 1));
 
-                    if (!IsHuman)
+                    IsHuman = true;
+
+                    // １フレームごとに全ボディの情報を１つのCSVファイルに追記
+                    using (var sw = new StreamWriter(csvFileName, append: true))
                     {
-                        DateTime tmp = DateTime.Now;
-                        TimeSpan baseInterval = new TimeSpan(0, 0, 10);
+                        now = DateTime.Now;
+                        string timeStamp = now.ToString("HHmmssfff");
+                        // 先頭にモードとタイムスタンプを書き込む
+                        sw.Write($"{Label}, {timeStamp}");
 
-                        if (TimeSpan.Compare(baseInterval, tmp - now) == -1)
+                        // 原則1人のみの座標を記録
+                        // for (uint i = 0; i < lastFrame.NumberOfBodies; ++i)
+                        
+                        var skeleton = lastFrame.GetBodySkeleton(0);
+                        var bodyId = lastFrame.GetBodyId(0);
+
+                        for (int jointId = 0; jointId < (int)JointId.Count; ++jointId)
                         {
-                            // ディレクトリパスに必要な情報を取得
-                            now = DateTime.Now;
-                            day = now.ToString("yyyyMMdd");
-                            scene = now.ToString("HHmmssfff");
+                            var joint = skeleton.GetJoint(jointId);
+                            sw.Write($", {joint.Position.X}, {joint.Position.Y}, {joint.Position.Z}");
 
-                            string depth_path = $@"{path}\{day}\{scene}\depth";
-                            Directory.CreateDirectory(depth_path);
-                        }
-                        IsHuman = true;
-                    }
-                    for (uint i = 0; i < lastFrame.NumberOfBodies; ++i)
-                    {
-                        DirectoryUtils.SafeCreateDirectory($@"{path}\{day}\{scene}\{i}");
-                        string filename = $@"{path}\{day}\{scene}\{i}\pos.csv";
-                        var append = true;
-                        var skeleton = lastFrame.GetBodySkeleton(i);
-                        var bodyId = lastFrame.GetBodyId(i);
-                        var bodyColor = BodyColors.GetColorAsVector(bodyId);
+                            // GUI描画用
+                            const float radius = 0.024f;
+                            SphereRenderer.Render(joint.Position / 1000, radius, BodyColors.GetColorAsVector(bodyId));
 
-                        using (var sw = new System.IO.StreamWriter(filename, append))
-                        {
-                            now = DateTime.Now;
-                            string string_now = now.ToString("HHmmssfff");
-                            sw.Write("{0}, {1}", Mode, string_now);
-                            for (int jointId = 0; jointId < (int)JointId.Count; ++jointId)
+                            if (JointConnections.JointParent.TryGetValue((JointId)jointId, out JointId parentId))
                             {
-                                var joint = skeleton.GetJoint(jointId);
-                                sw.Write("{0}, {1}, {2},", joint.Position.X, joint.Position.Y, joint.Position.Z);
-
-                                // GUI描画する場合
-                                const float radius = 0.024f;
-                                SphereRenderer.Render(joint.Position / 1000, radius, bodyColor);
-
-                                if (JointConnections.JointParent.TryGetValue((JointId)jointId, out JointId parentId))
-                                {
-                                    // Render a bone connecting this joint and its parent as a cylinder.
-                                    CylinderRenderer.Render(joint.Position / 1000, skeleton.GetJoint((int)parentId).Position / 1000, bodyColor);
-                                }
+                                CylinderRenderer.Render(joint.Position / 1000, skeleton.GetJoint((int)parentId).Position / 1000, BodyColors.GetColorAsVector(bodyId));
                             }
-                            sw.Write("\r\n");
                         }
-
+                        sw.WriteLine();
                     }
                 }
                 else
                 {
                     IsHuman = false;
                 }
-
             }
         }
 
         private void CreateResources()
         {
-            // GUI描画する場合
+            // GUI描画用リソースの初期化
             SphereRenderer = new SphereRenderer();
             CylinderRenderer = new CylinderRenderer();
             PointCloudRenderer = new PointCloudRenderer();
-        }
-
-        public static class DirectoryUtils
-        {
-            /// <summary>
-            /// 指定したパスにディレクトリが存在しない場合
-            /// すべてのディレクトリとサブディレクトリを作成します
-            /// </summary>
-            public static DirectoryInfo SafeCreateDirectory(string path)
-            {
-                if (Directory.Exists(path))
-                {
-                    return null;
-                }
-                return Directory.CreateDirectory(path);
-            }
         }
     }
 }
