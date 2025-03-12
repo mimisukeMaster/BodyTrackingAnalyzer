@@ -43,10 +43,10 @@ def load_data():
                 print(f"{csv_path} の中身が空のためスキップします")
                 continue
 
-            label = df.iloc[0, 0]  # 各CSVのラベル番号
+            label_str, _ = os.path.splitext(file_name)  # ファイル名をラベル番号に
+            label = int(label_str)
             data.setdefault(label, []).append(df)
-            # ラベル番号昇順に並び替え
-            data = dict(sorted(data.items()))
+            
         else: print(f"パス {csv_path} が存在しません")
 
     return data
@@ -56,10 +56,9 @@ def compute_joint_statistics(df_list):
     std_values = []
 
     for i in range(joint_count):
-        xyz = np.array([df.iloc[:, 2 + i*3:5 + i*3].dropna().values for df in df_list])
+        xyz = np.array([df.iloc[:, i * 3 : (i + 1) * 3].dropna().values for df in df_list])
         if xyz.size == 0:
             continue
-        
         xyz_flat = xyz.reshape(-1, 3)
         
         # 関節の座標データから指標を計算
@@ -104,9 +103,9 @@ def plot_3d_scatter(ax, data, current_label):
         for i in range(joint_count):
             joint_name = joint_names[i]
             # Azure Kinect の座標系に合わせて変換する
-            new_x = df.iloc[:, 2 + i * 3] # 元 x座標
-            new_y = df.iloc[:, 4 + i * 3] # 元 z座標
-            new_z = -1 * df.iloc[:, 3 + i * 3] # 元 y座標
+            new_x = df.iloc[:, i * 3] # 元 x座標
+            new_y = df.iloc[:, 2 + i * 3] # 元 z座標
+            new_z = -1 * df.iloc[:, 1 + i * 3] # 元 y座標
 
             ax.scatter(new_x, new_y, new_z, label=joint_name, color=joint_colors[joint_name], alpha=0.7)
 

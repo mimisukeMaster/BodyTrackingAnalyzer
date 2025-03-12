@@ -89,7 +89,7 @@ namespace Csharp_3d_viewer
                     Label = label;
                     // ユーザーのラベルを使ってファイル名を設定
                     csvFilePath = $@"{path}\{Label}.csv";
-                    Console.WriteLine($"ラベル番号 {Label} の計測を tmp/{Label}.csv に保存します");
+                    Console.WriteLine($"ラベル番号 {Label} の計測データを tmp / {Label}.csv に保存します");
                     isLabelSet = true;
                 }
                 else  Console.WriteLine("無効な入力\n整数値を入力してください");
@@ -144,21 +144,15 @@ namespace Csharp_3d_viewer
 
                     using (var sw = new StreamWriter(csvFilePath, append: true))
                     {
-                        now = DateTime.Now;
-                        string timeStamp = now.ToString("HHmmssfff");
-                        // 先頭にモードとタイムスタンプを書き込む
-                        sw.Write($"{Label}, {timeStamp}");
-
                         // 原則1人のみの座標を記録
                         // for (uint i = 0; i < lastFrame.NumberOfBodies; ++i)
-                        
                         var skeleton = lastFrame.GetBodySkeleton(0);
                         var bodyId = lastFrame.GetBodyId(0);
 
                         for (int jointId = 0; jointId < (int)JointId.Count; ++jointId)
                         {
                             var joint = skeleton.GetJoint(jointId);
-                            sw.Write($", {joint.Position.X}, {joint.Position.Y}, {joint.Position.Z}");
+                            sw.Write($"{joint.Position.X}, {joint.Position.Y}, {joint.Position.Z}, ");
 
                             // GUI描画用
                             const float radius = 0.024f;
