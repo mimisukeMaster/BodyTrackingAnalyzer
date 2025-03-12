@@ -21,9 +21,6 @@ namespace Csharp_3d_viewer
         public PosSaver(VisualizerData visualizerData)
         {
             this.visualizerData = visualizerData;
-
-            // 実行開始時に一意のCSVファイル名を生成（tempフォルダ直下）
-            csvFileName = $@"{path}\pos_{DateTime.Now.ToString("yyyyMMdd_HHmmssfff")}.csv";
             
             // tempフォルダが存在しなければ作成
             Directory.CreateDirectory(path);
@@ -32,22 +29,17 @@ namespace Csharp_3d_viewer
         public bool IsActive { get; private set; }
         public bool IsHuman { get; private set; } = false;
 
-        // ラベル用の難易度指定
+        // ラベル用
         public int Label { get; private set; } = 0;
         private bool isLabelSet = false;
 
-        // 出力先フォルダ（temp直下にCSVを作成する）
+        // 出力先フォルダ
         public static string path = @"..\..\..\..\..\temp";
 
-        // 実行ごとに一意なCSVファイル名
-        private readonly string csvFileName;
+        // 実行ごとに一意なCSVファイルパス
+        private string csvFilePath = string.Empty;
 
         public DateTime now = DateTime.Now;
-
-        public void SetLabel(int label)
-        {
-            Label = label;
-        }
 
         public void StartVisualizationThread()
         {
@@ -74,8 +66,7 @@ namespace Csharp_3d_viewer
                     };
                     nativeWindow.Animation = true;
 
-                    nativeWindow.Create(0, 0, 640, 480, NativeWindowStyle.Overlapped);
-
+                    nativeWindow.Create(0, 0, 960, 720, NativeWindowStyle.Overlapped);
                     nativeWindow.Show();
 
                     // 別スレッドでユーザーからのラベル入力を受け付ける
@@ -95,11 +86,13 @@ namespace Csharp_3d_viewer
 
                 if (int.TryParse(input, out int label))
                 {
-                    SetLabel(label);
-                    Console.WriteLine($"ラベル番号 {label} の計測を行います");
+                    Label = label;
+                    // ユーザーのラベルを使ってファイル名を設定
+                    csvFilePath = $@"{path}\{Label}.csv";
+                    Console.WriteLine($"ラベル番号 {Label} の計測を tmp/{Label}.csv に保存します");
                     isLabelSet = true;
                 }
-                else Console.WriteLine("無効な入力\n整数値を入力してください");
+                else  Console.WriteLine("無効な入力\n整数値を入力してください");
             }
         }
 
@@ -117,10 +110,7 @@ namespace Csharp_3d_viewer
             CreateResources();
         }
 
-        private static float ToRadians(float degrees)
-        {
-            return degrees / 180.0f * (float)Math.PI;
-        }
+        private static float ToRadians(float degrees) => degrees / 180.0f * (float)Math.PI;
 
         public void NativeWindow_Render(object sender, NativeWindowEventArgs e)
         {
@@ -152,10 +142,7 @@ namespace Csharp_3d_viewer
                     PointCloud.ComputePointCloud(lastFrame.Capture.Depth, ref pointCloud);
                     PointCloudRenderer.Render(pointCloud, new Vector4(1, 1, 1, 1));
 
-                    IsHuman = true;
-
-                    // １フレームごとに全ボディの情報を１つのCSVファイルに追記
-                    using (var sw = new StreamWriter(csvFileName, append: true))
+                    using (var sw = new StreamWriter(csvFilePath, append: true))
                     {
                         now = DateTime.Now;
                         string timeStamp = now.ToString("HHmmssfff");
@@ -184,10 +171,6 @@ namespace Csharp_3d_viewer
                         }
                         sw.WriteLine();
                     }
-                }
-                else
-                {
-                    IsHuman = false;
                 }
             }
         }
