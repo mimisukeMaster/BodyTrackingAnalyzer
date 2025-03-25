@@ -41,7 +41,7 @@ Also, saving joint positions in a csv format and depth images every human (optio
 ## Usage
 1. [`Csharp_3d_viewer.sln`](Csharp_3d_viewer.sln)を Visual Studio 2022 で開きます。プロジェクトの構成が読み込まれます。
 > [!Tip]
->　別途インストールした Azure Kinect Body Tracking SDK のバージョンが1.1.2の場合、以下のファイルを書き換える必要があります。これは、バージョン更新に伴う書式の旧型式化によるものです。このリポジトリの一部ファイルは公式リポジトリのものを使用しており、そちらでも[同様の変更]((https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8))が行われています。
+>　別途インストールした Azure Kinect Body Tracking SDK のバージョンが1.1.2の場合、以下のファイルを書き換える必要があります。これは、バージョン更新に伴う書式の旧型式化によるものです。このリポジトリの一部ファイルは公式リポジトリのものを使用しており、そちらでも[同様の変更](https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8)が行われています。
 > - [Shader.cs](/Shaders.cs) : [公式](https://github.com/microsoft/Azure-Kinect-Samples/blob/master/body-tracking-samples/csharp_3d_viewer/Shaders.cs)と同じコードに変更して下さい。 
 > 
 > - [Csharp_3d_viewer.csproj](/Csharp_3d_viewer.csproj) : `Microsoft.Azure.Kinect.BodyTracking`のバージョンを対応した数字に書き換えます。<br>
