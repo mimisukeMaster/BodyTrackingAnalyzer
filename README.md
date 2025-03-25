@@ -40,19 +40,19 @@ Also, saving joint positions in a csv format and depth images every human (optio
 
 ## Usage
 1. [`Csharp_3d_viewer.sln`](Csharp_3d_viewer.sln)を Visual Studio 2022 で開きます。プロジェクトの構成が読み込まれます。
+> [!Tip]
+>　別途インストールした Azure Kinect Body Tracking SDK のバージョンが1.1.2の場合、以下のファイルを書き換える必要があります。これは、バージョン更新に伴う書式の旧型式化によるものです。このリポジトリの一部ファイルは公式リポジトリのものを使用しており、そちらでも[同様の変更]((https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8))が行われています。
+> - [Shader.cs](/Shaders.cs) : [公式](https://github.com/microsoft/Azure-Kinect-Samples/blob/master/body-tracking-samples/csharp_3d_viewer/Shaders.cs)と同じコードに変更して下さい。 
+> 
+> - [Csharp_3d_viewer.csproj](/Csharp_3d_viewer.csproj) : `Microsoft.Azure.Kinect.BodyTracking`のバージョンを対応した数字に書き換えます。<br>
+> 18行目を以下のように変更してください。
+> ```html
+><PackageReference Include="Microsoft.Azure.Kinect.BodyTracking" Version="1.1.2" />
+> ```
 
 2. Visual Studio 2022 上で`ビルド > ソリューションのビルド`を行います。
 
 3. `デバッグ > デバッグなしで開始` を選択して実行します。
-> [!Tip]
->　コンソールに以下のようなエラーが出力された場合：
-> ```
-> ハンドルされていない例外: System.Exception: Compilation error:
-> 0(6) : error C5514: 'varying' is deprecated and removed from this profile, use 'in/out' instead
-> ```
-> [Shader.cs](/Shaders.cs)のshaderコードの記述をエラー文の通りに修正する必要があります。
-> 
-> `Microsoft.Azure.Kinect.BodyTracking`のバージョンが更新されていることにより生じるものです。このリポジトリの一部ファイルは公式サンプルを使用しており、shaderコードの変更も[公式のコミット履歴](https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8)に見られます。
 
 4. 開始直後は、コンソール画面から記録するデータへのラベルを設定してください。整数値を入力後、`Enter`キーで確定させます。 ラベルはそのままファイル名になります。
 
@@ -67,23 +67,23 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 ===================================
 
 1. Build `Csharp_3d_viewer.sln`.
+> [!Tip]  
+> If you are using the separately installed Azure Kinect Body Tracking SDK version 1.1.2, you need to modify the following files. This is due to outdated syntax resulting from the version update. Some files in this repository are taken from the official repository, and similar changes have been applied there as well in the [official commit](https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8).  
+> - [Shader.cs](/Shaders.cs): Please update this file to use the same code as the [official version](https://github.com/microsoft/Azure-Kinect-Samples/blob/master/body-tracking-samples/csharp_3d_viewer/Shaders.cs).  
+>  
+> - [Csharp_3d_viewer.csproj](/Csharp_3d_viewer.csproj): Change the version number for `Microsoft.Azure.Kinect.BodyTracking` to the appropriate value.  
+> Update line 18 as follows:  
+> ```html
+> <PackageReference Include="Microsoft.Azure.Kinect.BodyTracking" Version="1.1.2" />
+> ```
 
 2. Click `Debug > Start without debugging` to begin.
-> [!Tip]  
-> If the following error appears in the console:  
-> ```  
-> Unhandled exception: System.Exception: Compilation error:  
-> 0(6) : error C5514: 'varying' is deprecated and removed from this profile, use 'in/out' instead  
-> ```  
-> You need to modify the shader code in [Shader.cs](/Shaders.cs) as indicated in the error message.  
->  
-> This occurs due to an update in the `Microsoft.Azure.Kinect.BodyTracking` version. Some files in this repository are based on official samples, and changes to the shader code can also be found in the [official commit history](https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8).
 
-4. Right after starting, set labels for the recorded data from the console screen.
+3. Right after starting, set labels for the recorded data from the console screen.
 
-5. Press `ESC` key or `Ctrl + C` to exit.
+4. Press `ESC` key or `Ctrl + C` to exit.
 
-6. You can analyze the recorded data using [`analyze.py`](analyze.py). Make sure that the CSV file exists in the `tmp` folder before running this script.
+5. You can analyze the recorded data using [`analyze.py`](analyze.py). Make sure that the CSV file exists in the `tmp` folder before running this script.
 
 
 ## Analysis Methods on `analyze.py`
