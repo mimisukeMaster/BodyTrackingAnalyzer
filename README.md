@@ -44,15 +44,15 @@ Also, saving joint positions in a csv format and depth images every human (optio
 2. Visual Studio 2022 上で`ビルド > ソリューションのビルド`を行います。
 
 3. `デバッグ > デバッグなしで開始` を選択して実行します。
+> [!Tip]
 >　コンソールに以下のようなエラーが出力された場合：
 > ```
 > ハンドルされていない例外: System.Exception: Compilation error:
 > 0(6) : error C5514: 'varying' is deprecated and removed from this profile, use 'in/out' instead
 > ```
-> [Shader.cs](/Shaders.cs)のShaderコードの記述をエラー文の通りに修正する必要があります。
+> [Shader.cs](/Shaders.cs)のshaderコードの記述をエラー文の通りに修正する必要があります。
 > 
-> `Microsoft.Azure.Kinect.BodyTracking`のバージョンが更新されていることにより生じるものです。このリポジトリの一部ファイルは公式サンプルを使用しており、Shaderコードの変更も[公式のコミット](https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8)履歴に見られます。
-
+> `Microsoft.Azure.Kinect.BodyTracking`のバージョンが更新されていることにより生じるものです。このリポジトリの一部ファイルは公式サンプルを使用しており、shaderコードの変更も[公式のコミット履歴](https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8)に見られます。
 
 4. 開始直後は、コンソール画面から記録するデータへのラベルを設定してください。整数値を入力後、`Enter`キーで確定させます。 ラベルはそのままファイル名になります。
 
@@ -69,12 +69,21 @@ Visual Studio 2022でPythonを動かしたい場合は[こちらの記事](https
 1. Build `Csharp_3d_viewer.sln`.
 
 2. Click `Debug > Start without debugging` to begin.
+> [!Tip]  
+> If the following error appears in the console:  
+> ```  
+> Unhandled exception: System.Exception: Compilation error:  
+> 0(6) : error C5514: 'varying' is deprecated and removed from this profile, use 'in/out' instead  
+> ```  
+> You need to modify the shader code in [Shader.cs](/Shaders.cs) as indicated in the error message.  
+>  
+> This occurs due to an update in the `Microsoft.Azure.Kinect.BodyTracking` version. Some files in this repository are based on official samples, and changes to the shader code can also be found in the [official commit history](https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8).
 
-3. Right after starting, set labels for the recorded data from the console screen.
+4. Right after starting, set labels for the recorded data from the console screen.
 
-4. Press `ESC` key or `Ctrl + C` to exit.
+5. Press `ESC` key or `Ctrl + C` to exit.
 
-5. You can analyze the recorded data using [`analyze.py`](analyze.py). Make sure that the CSV file exists in the `tmp` folder before running this script.
+6. You can analyze the recorded data using [`analyze.py`](analyze.py). Make sure that the CSV file exists in the `tmp` folder before running this script.
 
 
 ## Analysis Methods on `analyze.py`
