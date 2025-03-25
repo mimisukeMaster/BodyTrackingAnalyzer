@@ -46,7 +46,7 @@ def load_data():
             label_str, _ = os.path.splitext(file_name)  # ファイル名をラベル番号に
             label = int(label_str)
             data.setdefault(label, []).append(df)
-            
+
         else: print(f"パス {csv_path} が存在しません")
 
     return data

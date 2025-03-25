@@ -1,4 +1,10 @@
 # BodyTrackingAnalyzer
+[<img src="https://img.shields.io/github/stars/mimisukeMaster/BodyTrackingAnalyzer">](https://github.com/mimisukeMaster/BodyTrackingAnalyzer/stargazers)
+[<img  src="https://img.shields.io/github/license/mimisukeMaster/BodyTrackingAnalyzer">](/LICENSE)
+[<img src="https://img.shields.io/badge/issues-welcome-orange">](https://github.com/mimisukeMaster/BodyTrackingAnalyzer/issues)<br>
+<img src="https://img.shields.io/github/repo-size/mimisukeMaster/BodyTrackingAnalyzer?color=ff69b4&logo=gitlfs">
+[<img src="https://img.shields.io/static/v1?label=&message=Open%20in%20Visual%20Studio%20Code&color=007acc&style=flat">](https://github.dev/mimisukeMaster/BodyTrackingAnalyzer)
+
 ## Overview
 Azure Kinect DK を使用した人体検知＆分析ツール
 
@@ -38,6 +44,15 @@ Also, saving joint positions in a csv format and depth images every human (optio
 2. Visual Studio 2022 上で`ビルド > ソリューションのビルド`を行います。
 
 3. `デバッグ > デバッグなしで開始` を選択して実行します。
+>　コンソールに以下のようなエラーが出力された場合：
+> ```
+> ハンドルされていない例外: System.Exception: Compilation error:
+> 0(6) : error C5514: 'varying' is deprecated and removed from this profile, use 'in/out' instead
+> ```
+> [Shader.cs](/Shaders.cs)のShaderコードの記述をエラー文の通りに修正する必要があります。
+> 
+> `Microsoft.Azure.Kinect.BodyTracking`のバージョンが更新されていることにより生じるものです。このリポジトリの一部ファイルは公式サンプルを使用しており、Shaderコードの変更も[公式のコミット](https://github.com/microsoft/Azure-Kinect-Samples/pull/69/commits/a0b569784338a0354e87dacaeb90e53527842ff8)履歴に見られます。
+
 
 4. 開始直後は、コンソール画面から記録するデータへのラベルを設定してください。整数値を入力後、`Enter`キーで確定させます。 ラベルはそのままファイル名になります。
 
